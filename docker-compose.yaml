@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+
+  service_redis:
+    container_name: container_redis
+    image: redis:4.0.14
+    environment:
+      - TZ=Asia/Shanghai
+    ports:
+      - "6611:6379"
+    volumes:
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+      - ./redis/data/:/data/
+      - ./redis/log/:/var/log/redis/
+    command: redis-server /usr/local/etc/redis/redis.conf
+    restart: always
+
+  service_springboot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      TZ: Asia/Shanghai
+      spring.data.redis.host: service_redis
+    ports:
+      - "8080:8080"
+    depends_on:
+      - service_redis
+    restart: always
+
+
