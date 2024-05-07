@@ -1,11 +1,17 @@
 # OnlinePaste
 a lightweight online clip board
 
-
-![1715057868889.png](https://s4.zstatic.net/images/2024/05/07_2pwzlRsSoQ26639b4d52f066.png)
+Demo: [p.myyrh.com](https://p.myyrh.com)
 ## Notice
 i will finished it when i have time !
 
+## how to use
+1. Docker
+```shell
+git clone https://github.com/xia0ne/OnlinePaste.git
+cd OnlinePaste
+docker-compose up -d
+```
 ## Done
 - main functions
   - copy a page
@@ -13,8 +19,9 @@ i will finished it when i have time !
   - redis enduring
 
 ## TODO
-- [ ] Demo
-- [ ] DockerFile
+- [x] Demo
+- [x] DockerFile
 - [ ] refactor the code
-
+- [ ] password protected
+- ...
 
