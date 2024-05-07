@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}"></title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://s4.zstatic.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        #help-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 999;
+            button {
+                padding: 10px 20px;
+                margin-top: 10px;
+                border: none;
+                border-radius: 5px;
+                background-color: #4CAF50;
+                color: white;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+            button:hover {
+                background-color: #45a049;
+            }
+        }
+
+        #editor-container, #preview-container {
+            margin-top: 5%;
+            width: 45%;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            height: 100%;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        #editor-container {
+            margin-right: 20px;
+        }
+        textarea {
+            width: calc(100% - 20px);
+            height: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: none;
+            box-sizing: border-box;
+        }
+        #markdownPreview {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+    </style>
+</head>
+<body>
+<div id="help-button">
+    <button onclick="saveMarkdown()">Save</button>
+</div>
+<div id="editor-container">
+
+    <h1>Editor</h1>
+    <label for="markdownInput"></label><textarea id="markdownInput" placeholder="Enter your Markdown here..."></textarea>
+    <br>
+
+</div>
+<div id="preview-container">
+    <h1>Preview</h1>
+    <div id="markdownPreview"></div>
+</div>
+
+<script src="https://s4.zstatic.net/ajax/libs/marked/2.1.3/marked.min.js"></script>
+<script>
+    let title = document.title;
+    loadMarkdown();
+    function saveMarkdown() {
+        var markdownContent = document.getElementById("markdownInput").value;
+        console.log( JSON.stringify({ content: markdownContent }))
+        fetch('/api/saveMarkdown', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ "title": title, "content": markdownContent })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    console.log("success")
+                }
+                console.log("success");
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("failed");
+                console.log("failed")
+            });
+    }
+
+    function loadMarkdown() {
+        fetch('/api/loadMarkdown', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ "title": title})
+        })
+            .then(response => {
+                if (!response.ok) {
+                    console.log("failed")
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+                var markdownContent = data.content;
+                if(markdownContent === undefined)
+                    return;
+                document.getElementById("markdownInput").value = markdownContent;
+                updatePreview();
+                console.log("success")
+            })
+            .catch(error => {
+                console.log("failed")
+            });
+    }
+
+    function updatePreview() {
+        var markdownInput = document.getElementById("markdownInput").value;
+        var markdownPreview = document.getElementById("markdownPreview");
+        markdownPreview.innerHTML = marked(markdownInput);
+
+        if (window.MathJax) {
+            MathJax.typesetPromise()
+                .then(() => {
+                    console.log("MathJax typesetting complete");
+                })
+                .catch((err) => {
+                    console.error("MathJax typesetting failed:", err);
+                });
+        }
+    }
+
+
+
+    updatePreview();
+
+    document.getElementById("markdownInput").addEventListener("input", updatePreview);
+</script>
+</body>
+</html>
