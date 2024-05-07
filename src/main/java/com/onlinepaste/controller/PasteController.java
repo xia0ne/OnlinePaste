@@ -19,6 +19,6 @@ public class PasteController {
 
 	@PostMapping("/saveMarkdown")
 	public void setMarkdown(@RequestBody InfoDO infoDO){
-		redisService.set(infoDO);
+		redisService.set(infoDO, 48);
 	}
 }

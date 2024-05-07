@@ -26,16 +26,21 @@ public class RedisServiceImpl implements RedisService {
 	}
 
 	@Override
-	public Boolean set(InfoDO infoDO) {
+	public void set(InfoDO infoDO, int hours) {
+		if(check(infoDO.getTitle()))
+				return;
 		String key = infoDO.getTitle();
 		Object value = infoDO.getContent();
 		try{
-			redisTemplate.opsForValue().set(key, value, 48, TimeUnit.HOURS);
+			if(hours == -1){
+				redisTemplate.opsForValue().set(key, value);
+			}else{
+				redisTemplate.opsForValue().set(key, value, hours, TimeUnit.HOURS);
+			}
 		}catch (Exception e){
-			return false;
 		}
-		return true;
 	}
+
 
 	@Override
 	public boolean check(String key) {

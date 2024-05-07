@@ -1,5 +1,6 @@
 package com.onlinepaste.controller;
 
+import lombok.extern.java.Log;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -16,9 +17,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Controller
+@Log
 public class IndexController {
+	@GetMapping("/")
+	public String hello(){
+		return "help";
+	}
 	@GetMapping("/{title}")
-	public String handleIndex(@PathVariable String title, Model model){
+	public String handleTitle(@PathVariable String title, Model model){
+
 		model.addAttribute("title", title);
 		return "index";
 	}
