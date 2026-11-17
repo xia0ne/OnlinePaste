@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Paste not found')}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+
+<main class="page">
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <div class="page-head">
+                    <h1>This paste is gone</h1>
+                    <p class="muted">
+                        <code th:text="${pasteId}">id</code> does not exist, or its lifetime has ended.
+                    </p>
+                </div>
+                <div class="alert">
+                    Pastes are deleted automatically when they expire. If someone shared this link with you,
+                    ask them to create a new one.
+                </div>
+                <p class="mt-16">
+                    <a class="btn btn-primary" href="/">Create a new paste</a>
+                    <a class="btn btn-secondary" href="/help">How it works</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+<div th:replace="~{fragments :: toast}"></div>
+<script src="/assets/app.js"></script>
+</body>
+</html>

@@ -1,11 +1,43 @@
 spring:
+  application:
+    name: OnlinePaste
   data:
     redis:
-      host: 127.0.0.1
-      port: 6611
-      connect-timeout: 5000
-      database: 3
-      password: 123321
-#  web:
-#    resources:
-#      static-locations: classpath:/META-INF/resources/, classpath:/resources/, classpath:/static/, classpath:/public/, classpath:/templates/
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      database: ${REDIS_DATABASE:0}
+      password: ${REDIS_PASSWORD:}
+      connect-timeout: ${REDIS_CONNECT_TIMEOUT:5s}
+      timeout: ${REDIS_TIMEOUT:2s}
+  thymeleaf:
+    cache: ${THYMELEAF_CACHE:true}
+
+server:
+  port: ${SERVER_PORT:8080}
+  error:
+    include-message: never
+    include-stacktrace: never
+  compression:
+    enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+
+onlinepaste:
+  # Public origin used for share links and QR codes. Behind a proxy set this to
+  # the public URL instead of trusting forwarded headers.
+  base-url: ${ONLINEPASTE_BASE_URL:http://localhost:8080}
+  max-content-length: ${ONLINEPASTE_MAX_CONTENT_LENGTH:100000}
+  id-length: ${ONLINEPASTE_ID_LENGTH:10}
+  view-count-enabled: ${ONLINEPASTE_VIEW_COUNT_ENABLED:true}
+  rate-limit:
+    enabled: ${ONLINEPASTE_RATE_LIMIT_ENABLED:true}
+    permits-per-minute: ${ONLINEPASTE_RATE_LIMIT_PER_MINUTE:30}

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(pageTitle)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle} + ' · OnlinePaste'">OnlinePaste</title>
+    <meta name="description" content="A tiny online clipboard for text, Markdown and code. Share a link, optionally with an expiry.">
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <script src="/assets/theme.js"></script>
+    <link rel="stylesheet" href="/assets/app.css">
+    <link id="hljs-light" rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css"
+          integrity="sha384-eFTL69TLRZTkNfYZOLM+G04821K1qZao/4QLJbet1pP4tcF+fdXq/9CdqAbWRl/L" crossorigin="anonymous">
+    <link id="hljs-dark" rel="stylesheet" disabled
+          href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css"
+          integrity="sha384-wH75j6z1lH97ZOpMOInqhgKzFkAInZPPSPlZpYKYTOqsaizPvhQZmAtLcPKXpLyH" crossorigin="anonymous">
+</head>
+<body>
+
+<header class="site-header" th:fragment="header">
+    <div class="container">
+        <a class="brand" href="/"><span class="brand-mark">OP</span>OnlinePaste</a>
+        <nav class="site-nav" aria-label="Main navigation">
+            <a href="/help">How it works</a>
+            <a href="https://github.com/xia0ne/OnlinePaste" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <button type="button" class="btn btn-ghost" data-theme-toggle aria-pressed="false">Theme</button>
+        </nav>
+    </div>
+</header>
+
+<footer class="site-footer" th:fragment="footer">
+    <div class="container">
+        <span>OnlinePaste — a lightweight online clipboard.</span>
+        <span><a href="/help">Help</a> · <a href="https://github.com/xia0ne/OnlinePaste">Source</a></span>
+    </div>
+</footer>
+
+<div id="toast" class="toast" role="status" aria-live="polite" th:fragment="toast"></div>
+
+</body>
+</html>

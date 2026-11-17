@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Shared paste')}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+
+<main class="page">
+    <div class="container">
+        <div class="page-head">
+            <h1>Shared paste</h1>
+            <p>Public link · <span th:text="${views}">0</span> views</p>
+        </div>
+
+        <div class="view-grid">
+            <section class="card">
+                <div class="card-head">
+                    <div class="tabs" role="tablist" aria-label="View mode">
+                        <button type="button" class="tab" role="tab" id="tab-preview"
+                                data-view-tab="preview" aria-selected="true" aria-controls="preview-pane">
+                            Rendered
+                        </button>
+                        <button type="button" class="tab" role="tab" id="tab-code"
+                                data-view-tab="code" aria-selected="false" aria-controls="code-pane">
+                            Source
+                        </button>
+                    </div>
+                    <button type="button" class="btn btn-ghost" data-copy-target="#paste-content">Copy content</button>
+                </div>
+                <div class="card-body">
+                    <div id="preview-pane" role="tabpanel" aria-labelledby="tab-preview" hidden>
+                        <article id="preview-body" class="markdown-body preview-body"></article>
+                    </div>
+                    <div id="code-pane" role="tabpanel" aria-labelledby="tab-code" hidden>
+                        <pre class="code-view"><code id="code-block"></code></pre>
+                    </div>
+                    <pre id="paste-content" class="raw-content" th:text="${content}"></pre>
+                </div>
+            </section>
+
+            <aside class="card">
+                <div class="card-head">
+                    <h2>Details</h2>
+                    <span class="badge" th:if="${!permanent}">Expiring</span>
+                    <span class="badge neutral" th:if="${permanent}">Permanent</span>
+                </div>
+                <div class="card-body">
+                    <dl class="meta-list">
+                        <div class="meta-item">
+                            <dt class="meta-label">Paste ID</dt>
+                            <dd class="meta-value" th:text="${pasteId}">id</dd>
+                        </div>
+                        <div class="meta-item">
+                            <dt class="meta-label">Created</dt>
+                            <dd class="meta-value" th:text="${createdAtText}">—</dd>
+                        </div>
+                        <div class="meta-item">
+                            <dt class="meta-label">Expires</dt>
+                            <dd class="meta-value">
+                                <span th:text="${expiresAtText}">Never</span><br>
+                                <span class="muted small" id="expires-relative"
+                                      th:attr="data-expires=${expiresAtIso}">No expiry</span>
+                            </dd>
+                        </div>
+                        <div class="meta-item">
+                            <dt class="meta-label">Views</dt>
+                            <dd class="meta-value" th:text="${views}">0</dd>
+                        </div>
+                    </dl>
+
+                    <label class="meta-label mt-16" for="share-url">Share link</label>
+                    <div class="copy-row">
+                        <input id="share-url" type="text" readonly th:value="${shareUrl}">
+                        <button type="button" class="btn btn-secondary" data-copy-target="#share-url">Copy</button>
+                    </div>
+
+                    <figure class="qr-panel mt-16">
+                        <img th:src="@{|/api/pastes/${pasteId}/qr.svg|}" alt="QR code for this paste"
+                             width="168" height="168">
+                        <figcaption>Scan to open</figcaption>
+                    </figure>
+
+                    <div class="meta-actions">
+                        <a class="btn btn-primary" href="/">Create another paste</a>
+                        <a class="btn btn-secondary" href="/help">How it works</a>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+<div th:replace="~{fragments :: toast}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"
+        integrity="sha384-QsSpx6a0USazT7nK7w8qXDgpSAPhFsb2XtpoLFQ5+X2yFN6hvCKnwEzN8M5FWaJb"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"
+        integrity="sha384-F/bZzf7p3Joyp5psL90p/p89AZJsndkSoGwRpXcZhleCWhd8SnRuoYo4d0yirjJp"
+        crossorigin="anonymous"></script>
+<script async id="MathJax-script"
+        src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"
+        integrity="sha384-Wuix6BuhrWbjDBs24bXrjf4ZQ5aFeFWBuKkFekO2t8xFU0iNaLQfp2K6/1Nxveei"
+        crossorigin="anonymous"></script>
+<script src="/assets/app.js"></script>
+<script src="/assets/view.js"></script>
+</body>
+</html>
