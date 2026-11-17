@@ -1,0 +1,8 @@
+target/
+.git/
+.idea/
+.vscode/
+*.iml
+.env
+reports/
+redis-data/

@@ -1,32 +1,59 @@
-version: '3'
+name: onlinepaste
 
 services:
-
-  service_redis:
-    container_name: container_redis
-    image: redis:4.0.14
+  redis:
+    image: redis:7.2-alpine
+    restart: unless-stopped
     environment:
-      - TZ=Asia/Shanghai
-    ports:
-      - "6611:6379"
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?set REDIS_PASSWORD in .env}
+      TZ: ${TZ:-UTC}
+    # Persistence and authentication are configured here instead of a checked
+    # in redis.conf, so the password never lives in the repository.
+    command:
+      - sh
+      - -c
+      - >-
+        exec redis-server
+        --appendonly yes
+        --appendfsync everysec
+        --save 900 1
+        --requirepass "$$REDIS_PASSWORD"
     volumes:
-      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
-      - ./redis/data/:/data/
-      - ./redis/log/:/var/log/redis/
-    command: redis-server /usr/local/etc/redis/redis.conf
-    restart: always
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" --no-auth-warning ping | grep -q PONG"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    # Redis stays on the internal compose network. Publish a port only for
+    # local debugging, e.g. `ports: ["127.0.0.1:6379:6379"]`.
 
-  service_springboot:
+  app:
     build:
       context: .
       dockerfile: Dockerfile
-    environment:
-      TZ: Asia/Shanghai
-      spring.data.redis.host: service_redis
-    ports:
-      - "8080:8080"
+    image: onlinepaste:local
+    restart: unless-stopped
     depends_on:
-      - service_redis
-    restart: always
+      redis:
+        condition: service_healthy
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?set REDIS_PASSWORD in .env}
+      ONLINEPASTE_BASE_URL: ${ONLINEPASTE_BASE_URL:-http://localhost:8080}
+      ONLINEPASTE_MAX_CONTENT_LENGTH: ${ONLINEPASTE_MAX_CONTENT_LENGTH:-100000}
+      ONLINEPASTE_RATE_LIMIT_PER_MINUTE: ${ONLINEPASTE_RATE_LIMIT_PER_MINUTE:-30}
+      TZ: ${TZ:-UTC}
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/actuator/health | grep -q '\"status\":\"UP\"'"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
 
-
+volumes:
+  redis-data:
