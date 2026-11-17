@@ -34,3 +34,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# 构建产物（历史中保留，不再跟踪）
+/springboot/*.jar
