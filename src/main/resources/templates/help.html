@@ -1,45 +1,83 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Help</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 0;
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        p {
-            margin: 0 auto;
-            max-width: 600px;
-            padding: 10px;
-            line-height: 1.5;
-            color: #555;
-        }
-        p:first-child {
-            margin-top: 20px;
-        }
-        p:last-child {
-            margin-bottom: 20px;
-        }
-        a {
-            color: #007bff;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
-</head>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('How it works')}"></head>
 <body>
-<h1>How to Use</h1>
-<p>Access with a random suffix is sufficient.</p>
-<p>You cannot modify an existing clipboard unless it expires.</p>
-<p>For more information, visit our <a href="https://github.com/xia0ne/OnlinePaste">GitHub</a> repository.</p>
+<header th:replace="~{fragments :: header}"></header>
+
+<main class="page">
+    <div class="container">
+        <div class="page-head">
+            <h1>How it works</h1>
+            <p>A clipboard in the browser, addressed by a short random link.</p>
+        </div>
+
+        <div class="card">
+            <div class="card-body prose">
+                <h2>Create a paste</h2>
+                <ol>
+                    <li>Open the <a href="/">home page</a> and type or paste your text.</li>
+                    <li>Pick an expiry: 1 hour, 1 day, 7 days or permanent.</li>
+                    <li>Optionally choose a memorable custom link of 4–64 characters.</li>
+                    <li>Create the link, then copy it or scan the QR code.</li>
+                </ol>
+
+                <h2>Good to know</h2>
+                <ul>
+                    <li>Pastes are public to anyone who has the link. Treat the link as the password.</li>
+                    <li>Content is rendered as Markdown with fenced code highlighting, and there is a
+                        <strong>Source</strong> view for raw code.</li>
+                    <li>Expiry is enforced by the storage layer, so an expired paste is gone for good.</li>
+                    <li>Request size is limited to <span th:text="${maxContentLength}">100000</span> characters and
+                        write requests are rate limited.</li>
+                </ul>
+
+                <h2>API</h2>
+                <p>All endpoints return JSON and accept JSON except where noted.</p>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Method and path</th>
+                        <th>Purpose</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><code>POST /api/pastes</code></td>
+                        <td>Create a paste. Body: <code>{"content":"…","expiration":"1d","id":"optional"}</code>.
+                            Expiration is one of <code>1h</code>, <code>1d</code>, <code>7d</code>,
+                            <code>never</code>.</td>
+                    </tr>
+                    <tr>
+                        <td><code>GET /api/pastes/{id}</code></td>
+                        <td>Read a paste and increment its view counter.</td>
+                    </tr>
+                    <tr>
+                        <td><code>GET /api/pastes/{id}/qr.svg</code></td>
+                        <td>QR code for the share link, as an SVG image.</td>
+                    </tr>
+                    <tr>
+                        <td><code>GET /actuator/health</code></td>
+                        <td>Liveness/readiness probe used by Docker Compose.</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <h2>Self hosting</h2>
+                <p>The easiest route is Docker Compose. Copy <code>.env.example</code> to <code>.env</code>, set a
+                    Redis password and the public base URL, then run <code>docker compose up -d</code>.
+                    Configuration is environment driven; see the README for the full list.</p>
+
+                <h2>Privacy and security</h2>
+                <p>No accounts, no cookies and no analytics. Server side rendering escapes all paste content;
+                    the Markdown preview runs locally in your browser and escapes raw HTML. Rate limits and
+                    content limits are configurable by the operator.</p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+<div th:replace="~{fragments :: toast}"></div>
+<script src="/assets/app.js"></script>
 </body>
 </html>
